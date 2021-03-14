@@ -2,6 +2,7 @@
 using DayTide.Repositories;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -159,13 +160,49 @@ namespace DayTide.Controllers
         {
             return View(orderreqRepo.GetAll());
         }
+        [HttpGet]
         public ActionResult Editdelreq(int id)
         {
             OrderRequest ordrreq = new OrderRequest();
             ordrreq = orderreqRepo.GetOrderRequestById(id);
-
-            ViewBag.delman = delmanRepository.GetDeleveryMenByAdd(ordrreq.Address);
+           
+            ViewBag.delman = delmanRepository.GetDeleveryMenByAdd(ordrreq.District);
+          
             return View(orderreqRepo.GetOrderRequestById(id));
+        }
+        [HttpPost]
+        public ActionResult Editdelreq(OrderRequest orderreq ,string DelManId)
+        {
+            Order_Detail order_detail = new Order_Detail();
+            order_detail.OrderId = orderreq.OrderId;
+            order_detail.Date = orderreq.Date;
+            order_detail.Address = orderreq.Address;
+            order_detail.District = orderreq.District;
+            order_detail.Amount = orderreq.Amount;
+            order_detail.Payment_Type = orderreq.Payment_Type;
+            order_detail.CustomerId = orderreq.CustomerId;
+            order_detail.Status = "Processing";
+            order_detail.DelManId = DelManId;
+            OrderRequest ordrreq = new OrderRequest();
+            order_detailRepo.Insert(order_detail);
+            orderreqRepo.Delete(orderreq.OrderId);
+
+            return RedirectToAction("OrderHistory", "Admin");
+        }
+        [HttpGet]
+        public ActionResult Deletedelreq(int id)
+        {
+
+            orderreqRepo.Delete(id);
+            return RedirectToAction("OrderRequest", "Admin");
+
+        }
+        [HttpGet]
+        public ActionResult OrderHistory()
+        {
+           
+            return View(order_detailRepo.GetAll());
+
         }
         [HttpGet]
         public ActionResult Blockmod(string id)
