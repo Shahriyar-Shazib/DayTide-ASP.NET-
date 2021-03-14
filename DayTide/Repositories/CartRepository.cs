@@ -12,7 +12,10 @@ namespace DayTide.Repositories
         {
             return this.context.Carts.Where(x => x.CustomerId == id).ToList();
         }
-        
+        public Cart GetCartByProductId(int id)
+        {
+            return this.context.Carts.Where(x => x.ProductId == id).FirstOrDefault();
+        }
         //public List<Cart> GetCartProduct(string id)
         //{
         //    return this.context.Carts.Find();

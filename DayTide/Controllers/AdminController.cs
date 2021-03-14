@@ -18,6 +18,8 @@ namespace DayTide.Controllers
         UserRepository userRepository = new UserRepository();
         //PendingSignupRepository pensignupRepo = new PendingSignupRepository();
         NoticeRepository noticeRepository = new NoticeRepository();
+        Order_DetailRepository order_detailRepo = new Order_DetailRepository();
+        OrderRequestRepository orderreqRepo = new OrderRequestRepository();
         User usr = new User();
         // GET: Admin
         [HttpGet]
@@ -108,8 +110,40 @@ namespace DayTide.Controllers
         {
             return View(customerrRepository.GetUserById(id));
         }
-   
-      
+        [HttpGet]
+        public ActionResult OrderDetailcus(string id)
+        {
+            return View(order_detailRepo.GetOrderDetailByUsertId(id));
+        }
+
+        [HttpGet]
+        public ActionResult Mynotification()
+        {
+            return View(noticeRepository.GetNoticeByIdSend_For(Session["UserId"].ToString()));
+        }
+        [HttpGet]
+        public ActionResult EditNotice(int id)
+        {
+            return View(noticeRepository.GetNoticeById(id));
+        }
+        [HttpPost]
+        public ActionResult EditNotice(Notice notice)
+        {
+            noticeRepository.Update(notice);
+            return RedirectToAction("PostedNotification", "Admin");
+        }
+        [HttpGet]
+        public ActionResult DeleteNotice(int id)
+        {
+            noticeRepository.Delete(id);
+            return RedirectToAction("PostedNotification", "Admin");
+        }
+        [HttpGet]
+        public ActionResult PostedNotification()
+        {
+            return View(noticeRepository.GetNoticeByIdSend_by(Session["UserId"].ToString()));
+        }
+
         [HttpGet]
         public ActionResult ModeratorList()
         {
@@ -119,6 +153,19 @@ namespace DayTide.Controllers
         public ActionResult DeleveryManList()
         {
             return View(delmanRepository.GetAll());
+        }
+        [HttpGet]
+        public ActionResult OrderRequest()
+        {
+            return View(orderreqRepo.GetAll());
+        }
+        public ActionResult Editdelreq(int id)
+        {
+            OrderRequest ordrreq = new OrderRequest();
+            ordrreq = orderreqRepo.GetOrderRequestById(id);
+
+            ViewBag.delman = delmanRepository.GetDeleveryMenByAdd(ordrreq.Address);
+            return View(orderreqRepo.GetOrderRequestById(id));
         }
         [HttpGet]
         public ActionResult Blockmod(string id)
